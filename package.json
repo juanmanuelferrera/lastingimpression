@@ -1,0 +1,20 @@
+{
+  "name": "lastingimpression",
+  "version": "1.0.0",
+  "description": "Archive and blog of Hanuman das (Hrvoje Marjanovic)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next export",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "next-i18next": "latest",
+    "jspdf": "latest",
+    "html2canvas": "latest",
+    "@mui/material": "latest",
+    "@mui/icons-material": "latest"
+  }
+} 
