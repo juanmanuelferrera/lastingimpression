@@ -1,11 +1,19 @@
 import React from 'react';
 import { Container, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
+import Link from 'next/link';
+import posts from '../data/posts.json';
 
-const categories = [
-  { name: 'article', count: 42 },
-  { name: 'daily_meeting', count: 12 },
-  { name: 'censorship', count: 7 },
-];
+function slugify(str: string) {
+  return str.toLowerCase().replace(/\s+/g, '-');
+}
+
+const categoryMap: Record<string, number> = {};
+posts.forEach(post => {
+  (post.categories || []).forEach((cat: string) => {
+    categoryMap[cat] = (categoryMap[cat] || 0) + 1;
+  });
+});
+const categories = Object.entries(categoryMap);
 
 const CategoriesPage = () => (
   <Container maxWidth="md" sx={{ py: 6 }}>
@@ -13,10 +21,10 @@ const CategoriesPage = () => (
       Categories
     </Typography>
     <List>
-      {categories.map((cat, idx) => (
-        <React.Fragment key={cat.name}>
-          <ListItem button component="a" href={`#`}>
-            <ListItemText primary={cat.name} secondary={`${cat.count} posts`} />
+      {categories.map(([cat, count], idx) => (
+        <React.Fragment key={cat}>
+          <ListItem component={Link} href={`/category/${slugify(cat)}`} button>
+            <ListItemText primary={cat} secondary={`${count} posts`} />
           </ListItem>
           {idx < categories.length - 1 && <Divider />}
         </React.Fragment>

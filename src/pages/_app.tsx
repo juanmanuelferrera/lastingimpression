@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import type { AppProps } from 'next/app';
+import NavBar from '../components/NavBar';
+import { LanguageProvider } from '../components/LanguageContext';
+import BackToTop from '../components/BackToTop';
+import Footer from '../components/Footer';
 
 const theme = createTheme({
   palette: {
@@ -26,7 +30,12 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Component {...pageProps} />
+      <LanguageProvider>
+        <NavBar />
+        <Component {...pageProps} />
+        <BackToTop />
+        <Footer />
+      </LanguageProvider>
     </ThemeProvider>
   );
 } 

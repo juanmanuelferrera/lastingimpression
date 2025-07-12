@@ -1,5 +1,6 @@
 import React from 'react';
 import { MenuItem, Select } from '@mui/material';
+import { useLanguage } from './LanguageContext';
 
 const languages = [
   { code: 'en', label: 'English' },
@@ -7,12 +8,11 @@ const languages = [
 ];
 
 const LanguageSwitcher = () => {
-  const [lang, setLang] = React.useState('en');
-  // TODO: Integrate with i18n routing
+  const { language, setLanguage } = useLanguage();
   return (
     <Select
-      value={lang}
-      onChange={e => setLang(e.target.value)}
+      value={language}
+      onChange={e => setLanguage(e.target.value)}
       size="small"
       sx={{ minWidth: 120 }}
     >

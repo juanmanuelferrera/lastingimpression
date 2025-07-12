@@ -1,12 +1,22 @@
 import React from 'react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import PostList from '../components/PostList';
+import PDFExportListButton from '../components/PDFExportListButton';
+import posts from '../data/posts.json';
 import { Container, Typography, Box } from '@mui/material';
+import SEO from '../components/SEO';
 
 const HomePage = () => (
   <Container maxWidth="md" sx={{ py: 6 }}>
+    <SEO
+      title="Lasting Impression – Archive of Hanuman das (Hrvoje Marjanovic)"
+      description="A digital archive and blog dedicated to the works and legacy of Hanuman das (Hrvoje Marjanovic)."
+      image="/favicon.ico"
+      url="https://lastingimpression.pages.dev/"
+    />
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
       <LanguageSwitcher />
+      <PDFExportListButton posts={posts} filename="lastingimpression-archive.pdf" />
     </Box>
     <Typography variant="h2" component="h1" gutterBottom fontWeight={700}>
       Lasting Impression

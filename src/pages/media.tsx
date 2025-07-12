@@ -1,10 +1,11 @@
 import React from 'react';
 import { Container, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
+import Link from 'next/link';
 
 const mediaSections = [
-  { name: 'Videos', href: '#' },
-  { name: 'Audio', href: '#' },
-  { name: 'Photos', href: '#' },
+  { name: 'Videos', href: '/media/videos' },
+  { name: 'Audio', href: '/media/audio' },
+  { name: 'Photos', href: '/media/photos' },
 ];
 
 const MediaPage = () => (
@@ -15,7 +16,7 @@ const MediaPage = () => (
     <List>
       {mediaSections.map((section, idx) => (
         <React.Fragment key={section.name}>
-          <ListItem button component="a" href={section.href}>
+          <ListItem button component={Link} href={section.href}>
             <ListItemText primary={section.name} />
           </ListItem>
           {idx < mediaSections.length - 1 && <Divider />}

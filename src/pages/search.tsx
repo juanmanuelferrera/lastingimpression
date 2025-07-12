@@ -1,15 +1,29 @@
-import React, { useState } from 'react';
-import { Container, Typography, TextField, List, ListItem, ListItemText } from '@mui/material';
+import React, { useState, useMemo } from 'react';
+import posts from '../data/posts.json';
+import { Container, Typography, TextField, List, ListItem, ListItemText, Divider } from '@mui/material';
+import Link from 'next/link';
+import { useLanguage } from '../components/LanguageContext';
+
+function getSlugFromUrl(url: string) {
+  if (!url) return '';
+  const match = url.match(/\/([^\/]+)\/?$/);
+  return match ? match[1].replace(/\..*$/, '') : '';
+}
 
 const SearchPage = () => {
   const [query, setQuery] = useState('');
-  // Placeholder results
-  const results = query
-    ? [
-        { title: 'What is Krishna consciousness', snippet: 'A post about philosophy...' },
-        { title: 'Why God allows people to die young', snippet: 'A post about life and death...' },
-      ]
-    : [];
+  const { language } = useLanguage();
+  const results = useMemo(() => {
+    if (!query) return [];
+    const q = query.toLowerCase();
+    return posts.filter(post =>
+      post.language === language &&
+      ((post.title && post.title.toLowerCase().includes(q)) ||
+      (post.excerpt && post.excerpt.toLowerCase().includes(q)) ||
+      (post.content_html && post.content_html.toLowerCase().includes(q)))
+    );
+  }, [query, language]);
+
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Typography variant="h3" component="h1" gutterBottom fontWeight={700}>
@@ -24,11 +38,29 @@ const SearchPage = () => {
       />
       <List>
         {results.map((res, idx) => (
-          <ListItem key={idx} button component="a" href="#">
-            <ListItemText primary={res.title} secondary={res.snippet} />
-          </ListItem>
+          <React.Fragment key={res.title + res.date}>
+            <ListItem button component={Link} href={`/${getSlugFromUrl(res.url || '')}`}>
+              <ListItemText
+                primary={res.title}
+                secondary={
+                  <>
+                    <Typography variant="caption" color="text.secondary">
+                      {res.date ? new Date(res.date).toLocaleDateString() : ''}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {res.excerpt}
+                    </Typography>
+                  </>
+                }
+              />
+            </ListItem>
+            {idx < results.length - 1 && <Divider />}
+          </React.Fragment>
         ))}
       </List>
+      {query && results.length === 0 && (
+        <Typography variant="body2" color="text.secondary">No results found.</Typography>
+      )}
     </Container>
   );
 };
