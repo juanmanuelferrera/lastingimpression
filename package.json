@@ -4,7 +4,7 @@
   "description": "Archive and blog of Hanuman das (Hrvoje Marjanovic)",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build",
     "start": "next start"
   },
   "dependencies": {
