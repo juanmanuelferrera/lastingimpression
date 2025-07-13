@@ -1,62 +1,84 @@
-import React, { useRef } from 'react';
-import { Button, Box, Typography, Divider } from '@mui/material';
+import React from 'react';
+import { Button } from '@mui/material';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
-interface PDFExportListButtonProps {
-  posts: any[];
-  filename?: string;
-  showContent?: boolean;
+interface Post {
+  title?: string;
+  url?: string;
+  author?: string;
+  date?: string;
+  categories?: string[];
+  tags?: string[];
+  excerpt?: string;
+  content_html?: string;
+  images?: string[];
+  videos?: any[];
+  language?: string;
 }
 
-const PDFExportListButton: React.FC<PDFExportListButtonProps> = ({ posts, filename = 'posts.pdf', showContent = false }) => {
-  const hiddenRef = useRef<HTMLDivElement>(null);
+interface PDFExportListButtonProps {
+  posts: Post[];
+  filename?: string;
+}
 
-  const handleExport = async () => {
-    if (!hiddenRef.current) return;
-    const input = hiddenRef.current;
-    const canvas = await html2canvas(input, { scale: 2 });
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
-    const pageWidth = pdf.internal.pageSize.getWidth();
+const PDFExportListButton: React.FC<PDFExportListButtonProps> = ({ posts, filename = 'posts.pdf' }) => {
+  const handleExport = () => {
+    const pdf = new jsPDF();
+    let yPosition = 20;
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * pageWidth) / canvas.width;
-    let position = 0;
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    let remainingHeight = imgHeight - pageHeight;
-    while (remainingHeight > 0) {
-      position = position - pageHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      remainingHeight -= pageHeight;
-    }
+    const margin = 20;
+    const lineHeight = 7;
+
+    // Add title
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Posts List', margin, yPosition);
+    yPosition += 20;
+
+    // Add posts
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'normal');
+
+    posts.forEach((post, index) => {
+      // Check if we need a new page
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+
+      // Add post title
+      pdf.setFont('helvetica', 'bold');
+      const title = post.title?.length > 50 ? post.title.substring(0, 50) + '...' : post.title;
+      pdf.text(`${index + 1}. ${title}`, margin, yPosition);
+      yPosition += lineHeight;
+
+      // Add date if available
+      if (post.date) {
+        pdf.setFont('helvetica', 'italic');
+        pdf.setFontSize(10);
+        pdf.text(`Date: ${new Date(post.date).toLocaleDateString()}`, margin + 10, yPosition);
+        yPosition += lineHeight;
+      }
+
+      // Add excerpt if available
+      if (post.excerpt) {
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        const excerpt = post.excerpt.length > 80 ? post.excerpt.substring(0, 80) + '...' : post.excerpt;
+        pdf.text(excerpt, margin + 10, yPosition);
+        yPosition += lineHeight * 2;
+      } else {
+        yPosition += lineHeight;
+      }
+    });
+
     pdf.save(filename);
   };
 
   return (
-    <>
-      <Button variant="outlined" size="small" onClick={handleExport} sx={{ float: 'right', mb: 2 }}>
-        Export List as PDF
-      </Button>
-      <Box ref={hiddenRef} sx={{ display: 'none' }}>
-        {posts.map((post, idx) => (
-          <Box key={post.title + post.date} sx={{ p: 2, mb: 2, border: '1px solid #eee', borderRadius: 2, background: '#fff' }}>
-            <Typography variant="h6" fontWeight={600}>{post.title}</Typography>
-            <Typography variant="caption" color="text.secondary">
-              {post.date ? new Date(post.date).toLocaleDateString() : ''} | {post.author}
-            </Typography>
-            <Divider sx={{ my: 1 }} />
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              {post.excerpt}
-            </Typography>
-            {showContent && post.content_html && (
-              <div dangerouslySetInnerHTML={{ __html: post.content_html }} />
-            )}
-          </Box>
-        ))}
-      </Box>
-    </>
+    <Button variant="outlined" size="small" onClick={handleExport} sx={{ float: 'right', mb: 2 }}>
+      Export List as PDF
+    </Button>
   );
 };
 

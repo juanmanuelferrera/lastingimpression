@@ -13,7 +13,7 @@ const nextConfig = {
   
   // Disable server-side features since we're using static export
   experimental: {
-    appDir: false,
+    // Removed appDir as it's no longer needed in Next.js 14
   },
   
   // Configure for static hosting
